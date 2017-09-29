@@ -43,6 +43,15 @@ Description
 #include "mathematicalConstants.H"
 #include "pimpleControl.H"
 
+// Use c++ vectors
+#include <vector>
+
+// Read file
+#include <fstream>
+
+// Custom interpolation function
+#include "interp.H"
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 int main(int argc, char *argv[])
@@ -58,15 +67,71 @@ int main(int argc, char *argv[])
     #include "CourantNo.H"
     #include "setInitialDeltaT.H"  
 
+    // For interpolating a table read OpenFoam-style
+    //#include"interpolationTable.H"
+
     pimpleControl pimple(mesh);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+    // Before the time loop begins, read the array of x and y laser coordinates
+    // into a variable
+    std::ifstream xpoints("xlaser.txt");
+    std::ifstream ypoints("ylaser.txt");
+
+    // Store t, x, y in vectors
+    std::vector<scalar> tx, ty, x, y;
+    scalar tdata, xdata, ydata;
+    // Read x laser data
+    while(xpoints >> tdata >> xdata)
+    {
+      tx.push_back(tdata);
+      x.push_back(xdata);
+    }
+    // Read y laser data
+    while(ypoints >> tdata >> ydata)
+    {
+      ty.push_back(tdata);
+      y.push_back(ydata);
+    }
+
+    // Create scalar for laser intensity
+    dimensionedScalar I0 = 2*P/(pi*w*w);
+
     Info<< "\nStarting time loop\n" << endl;
+
+    // Get maximum z coordinate of mesh
+    scalarField cellz = mesh.C().component(2);
+    scalar zmax = max(cellz);
+
+    // Create depth field
+    //scalarField depth = zmax - mesh.C().component(2);
 
     while (runTime.loop())
     {
         Info<< "Time = " << runTime.timeName() << nl << endl;
+
+        // Current time value
+        scalar tval = runTime.value();
+
+        // Current laser coordinates
+        scalar X = interp(tval,tx,x);
+        scalar Y = interp(tval,ty,y);
+
+        // Make distance from laser center a volScalarField
+        scalarField cellx = mesh.C().component(0);
+        scalarField celly = mesh.C().component(1);
+        scalarField R2 = (X-cellx)*(X-cellx) + (Y-celly)*(Y-celly);
+
+        // Create energy depth function
+        /*
+        scalarField zfunc = 1.0/th.value();
+        forAll(zfunc,I)
+        {
+          if(depth[I] > th.value())
+            zfunc[I] = 0;
+        }
+        */
 
         #include "readTimeControls.H"
         #include "CourantNo.H"

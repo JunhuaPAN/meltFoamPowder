@@ -8,6 +8,8 @@
       + hs*4.0*exp(-pow(4.0*(T-Tmelt)/(Tl-Ts),2))/Foam::sqrt(pi)/(Tl-Ts)*fvm::ddt(T)
       + hs*4.0*exp(-pow(4.0*(T-Tmelt)/(Tl-Ts),2))/Foam::sqrt(pi)/(Tl-Ts)*(U & fvc::grad(T))
       - fvm::laplacian(lambda/rho, T)
+      - I0*(1/th)/rho
+      //- I0*(1/th)*exp(-2*R2/(w*w))
     );
 
     TEqn.relax();
@@ -21,8 +23,7 @@
     // Update pflag to account for melted powder
     forAll(pflag,I)
     {
-      if(T[I] > 1689.15)
-      //if(T[I] > Tl)
+      if(T[I] > Tl.value())
         pflag[I] = 0;
     };
 
