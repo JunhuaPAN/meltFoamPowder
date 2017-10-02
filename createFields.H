@@ -246,7 +246,8 @@
             runTime.timeName(),
             mesh
         ),
-        pflag*0.1*(a0 + a1*T) + (1.0-pflag)*(a0 + a1*T)
+        pflag*kfactor*(a0 + a1*T) + (1.0-pflag)*(a0 + a1*T)
+        //pflag*0.1*(a0 + a1*T) + (1.0-pflag)*(a0 + a1*T)
     );
 
     Info<< "Calculating field g.h\n" << endl;

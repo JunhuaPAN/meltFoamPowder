@@ -101,11 +101,10 @@ int main(int argc, char *argv[])
     Info<< "\nStarting time loop\n" << endl;
 
     // Get maximum z coordinate of mesh
-    scalarField cellz = mesh.C().component(2);
-    scalar zmax = max(cellz);
+    volScalarField cellz = mesh.C().component(2);
 
     // Create depth field
-    //scalarField depth = zmax - mesh.C().component(2);
+    volScalarField depth = max(cellz) - mesh.C().component(2);
 
     while (runTime.loop())
     {
@@ -115,17 +114,29 @@ int main(int argc, char *argv[])
         scalar tval = runTime.value();
 
         // Current laser coordinates
-        scalar X = interp(tval,tx,x);
-        scalar Y = interp(tval,ty,y);
+        scalar Xlaser = interp(tval,tx,x);
+        scalar Ylaser = interp(tval,ty,y);
 
         // Make distance from laser center a volScalarField
-        scalarField cellx = mesh.C().component(0);
-        scalarField celly = mesh.C().component(1);
-        scalarField R2 = (X-cellx)*(X-cellx) + (Y-celly)*(Y-celly);
+        volScalarField cellx = mesh.C().component(0);
+        volScalarField celly = mesh.C().component(1);
+        dimensionedScalar X("X",dimensionSet(0,1,0,0,0,0,0),Xlaser);
+        dimensionedScalar Y("Y",dimensionSet(0,1,0,0,0,0,0),Ylaser);
+
+        // Square of distance from laser center
+        volScalarField R2 = (X-cellx)*(X-cellx) + (Y-celly)*(Y-celly);
+
+        volScalarField laserSource = 1/rho*2.0*P/(pi*w*w)/th*exp(-2.0*R2/(w*w));
+
+        forAll(laserSource,I)
+        {
+          if(depth[I] > th.value())
+            laserSource[I] = 0.0;
+        }
 
         // Create energy depth function
+        //volScalarField zfunc = depth/th;
         /*
-        scalarField zfunc = 1.0/th.value();
         forAll(zfunc,I)
         {
           if(depth[I] > th.value())
