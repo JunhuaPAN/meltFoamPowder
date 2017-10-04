@@ -16,11 +16,11 @@ scalar interp(scalar tval, std::vector<scalar> tvec, std::vector<scalar> yvec) {
   // If you make it through the above:
   // Loop on time values until you find one that is greater than or equal to the
   // query time, then perform linear interpolation between the two values
-  for(int i = 0; i < tvec.size()-1; i++)
+  for(label i = 0; i < label(tvec.size()-1); i++)
   {
     if(tval >= tvec[i] && tval < tvec[i+1])
     {
-      Info << "Doing interpolation" << endl;
+      Info << "Interpolating laser coordinate" << endl;
       scalar dt = tvec[i+1] - tvec[i];
       scalar dy = yvec[i+1] - yvec[i];
       return (yvec[i] + (tval-tvec[i])*(dy/dt));

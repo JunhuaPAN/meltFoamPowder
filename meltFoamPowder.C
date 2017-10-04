@@ -73,38 +73,27 @@ int main(int argc, char *argv[])
     pimpleControl pimple(mesh);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+    
+    // Read the laser path data for solver to process
+    #include "readLaserPath.H"
 
-    // Before the time loop begins, read the array of x and y laser coordinates
-    // into a variable
-    std::ifstream xpoints("xlaser.txt");
-    std::ifstream ypoints("ylaser.txt");
+    // Create depth field as (max(z) - z) on the mesh
+    volScalarField cellz = mesh.C().component(2);
+    volScalarField depth = max(cellz) - mesh.C().component(2);
 
-    // Store t, x, y in vectors
-    std::vector<scalar> tx, ty, x, y;
-    scalar tdata, xdata, ydata;
-    // Read x laser data
-    while(xpoints >> tdata >> xdata)
-    {
-      tx.push_back(tdata);
-      x.push_back(xdata);
-    }
-    // Read y laser data
-    while(ypoints >> tdata >> ydata)
-    {
-      ty.push_back(tdata);
-      y.push_back(ydata);
-    }
+    // Assume initial laser velocity is zero
+    scalar Vlaser[2];
+    Vlaser[0] = 0.0;
+    Vlaser[1] = 0.0;
 
-    // Create scalar for laser intensity
-    dimensionedScalar I0 = 2*P/(pi*w*w);
+    // Initial laser coordinates
+    scalar XlaserOld = x[0];
+    scalar YlaserOld = y[0];
+
+    // Declare Xlaser/Ylaser
+    scalar Xlaser, Ylaser;
 
     Info<< "\nStarting time loop\n" << endl;
-
-    // Get maximum z coordinate of mesh
-    volScalarField cellz = mesh.C().component(2);
-
-    // Create depth field
-    volScalarField depth = max(cellz) - mesh.C().component(2);
 
     while (runTime.loop())
     {
@@ -113,9 +102,30 @@ int main(int argc, char *argv[])
         // Current time value
         scalar tval = runTime.value();
 
-        // Current laser coordinates
-        scalar Xlaser = interp(tval,tx,x);
-        scalar Ylaser = interp(tval,ty,y);
+        // Time step value
+        scalar deltaT = runTime.deltaTValue();
+
+        // Current laser coordinates via time-interpolation of input data
+        Xlaser = interp(tval,tx,x);
+        Ylaser = interp(tval,ty,y);
+
+        // Calculate laser velocity based on old coordinate values
+        Vlaser[0] = (Xlaser - XlaserOld)/deltaT;
+        Vlaser[1] = (Ylaser - YlaserOld)/deltaT;
+
+        // Check that velocity calculation is accurate
+        scalar Vmag = Foam::sqrt(Vlaser[0]*Vlaser[0] + Vlaser[1]*Vlaser[1]);
+        Info << "Vx   = " << Vlaser[0] << endl;
+        Info << "Vy   = " << Vlaser[1] << endl;
+        Info << "Vmag = " << Vmag << nl << endl;
+
+        /*
+        // Current laser velocity components
+        scalar Vlaser[3];
+        Vlaser[0] = interp(tval,tvx,vx);
+        Vlaser[1] = interp(tval,tvy,vy);
+        Vlaser[2] = 0.0;
+        */
 
         // Make distance from laser center a volScalarField
         volScalarField cellx = mesh.C().component(0);
@@ -126,8 +136,11 @@ int main(int argc, char *argv[])
         // Square of distance from laser center
         volScalarField R2 = (X-cellx)*(X-cellx) + (Y-celly)*(Y-celly);
 
-        volScalarField laserSource = 1/rho*2.0*P/(pi*w*w)/th*exp(-2.0*R2/(w*w));
+        // Laser heating source term
+        volScalarField laserSource = (1.0/rho)*(2.0*Efrac*P)/(pi*w*w)*(1.0/th)*exp(-2.0*R2/(w*w));
 
+        // Case of constant heat distribution with depth - set all values below
+        // powder bed thickness to 0
         forAll(laserSource,I)
         {
           if(depth[I] > th.value())
@@ -178,6 +191,10 @@ int main(int argc, char *argv[])
           if(maxMagGradT[I] < mag(gradT[I]))
             maxMagGradT[I] = mag(gradT[I]);
         }
+
+        // Update 'old' laser coordinates for next iteration
+        XlaserOld = Xlaser;
+        YlaserOld = Ylaser;
 
         runTime.write();
 
