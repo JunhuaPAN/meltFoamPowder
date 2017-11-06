@@ -30,7 +30,7 @@ Reference
     Tel.: +49 (921) 55-7163
 
 Application
-    meltFoamPowder
+    meltFoamPowder3
 
 Description
     Solves a convection dominated solid/liquid phase change process.
@@ -77,10 +77,6 @@ int main(int argc, char *argv[])
     // Read the laser path data for solver to process
     #include "readLaserPath.H"
 
-    // Create depth field as (max(z) - z) on the mesh
-    volScalarField cellz = mesh.C().component(2);
-    volScalarField depth = max(cellz) - mesh.C().component(2);
-
     // Assume initial laser velocity is zero
     scalar Vlaser[2];
     Vlaser[0] = 0.0;
@@ -119,14 +115,6 @@ int main(int argc, char *argv[])
         Info << "Vy   = " << Vlaser[1] << endl;
         Info << "Vmag = " << Vmag << nl << endl;
 
-        /*
-        // Current laser velocity components
-        scalar Vlaser[3];
-        Vlaser[0] = interp(tval,tvx,vx);
-        Vlaser[1] = interp(tval,tvy,vy);
-        Vlaser[2] = 0.0;
-        */
-
         // Make distance from laser center a volScalarField
         volScalarField cellx = mesh.C().component(0);
         volScalarField celly = mesh.C().component(1);
@@ -137,25 +125,8 @@ int main(int argc, char *argv[])
         volScalarField R2 = (X-cellx)*(X-cellx) + (Y-celly)*(Y-celly);
 
         // Laser heating source term
-        volScalarField laserSource = (1.0/rho)*(2.0*Efrac*P)/(pi*w*w)*(1.0/th)*exp(-2.0*R2/(w*w));
+        laserSource = (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*exp(-2.0*R2/(w*w));
 
-        // Case of constant heat distribution with depth - set all values below
-        // powder bed thickness to 0
-        forAll(laserSource,I)
-        {
-          if(depth[I] > th.value())
-            laserSource[I] = 0.0;
-        }
-
-        // Create energy depth function
-        //volScalarField zfunc = depth/th;
-        /*
-        forAll(zfunc,I)
-        {
-          if(depth[I] > th.value())
-            zfunc[I] = 0;
-        }
-        */
 
         #include "readTimeControls.H"
         #include "CourantNo.H"
@@ -195,6 +166,8 @@ int main(int argc, char *argv[])
         // Update 'old' laser coordinates for next iteration
         XlaserOld = Xlaser;
         YlaserOld = Ylaser;
+	// Deal with things related to alpha and calculating gg
+        #include "alpha.H"
 
         runTime.write();
 

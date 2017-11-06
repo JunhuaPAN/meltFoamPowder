@@ -13,6 +13,10 @@
         mesh
     );
 
+    // Create depth field as (max(z) - z) on the mesh (CGS units)
+    volScalarField cellz = mesh.C().component(2);
+    volScalarField depth = max(cellz) - mesh.C().component(2);
+
     // Create the field gradT
     volVectorField gradT
     (
@@ -130,6 +134,9 @@
     // Reading transport properties
     Info<< "Reading thermophysical properties\n" << endl;
     #include "readTransportProperties.H"
+    // Read Laser settings for this run
+    Info<< "Reading laser settings\n" << endl;
+    #include "readLaserSettings.H"
 
     // Calculating fit-parameters for phase change function
     Info<< "Calculating phase change properties\n" << endl;
@@ -250,6 +257,33 @@
         //pflag*0.1*(a0 + a1*T) + (1.0-pflag)*(a0 + a1*T)
     );
 
+    // Laser heat source field
+    volScalarField edensity
+    (
+        IOobject
+        (
+            "edensity",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        c3*pow(depth/c1,c2-1)*exp(-pow(depth/c1,c2))
+    );
+
+    volScalarField laserSource
+    (
+        IOobject
+        (
+            "laserSource",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*0.0
+    );
+
     Info<< "Calculating field g.h\n" << endl;
     volScalarField gh("gh", g & mesh.C());
     surfaceScalarField ghf("ghf", g & mesh.Cf());
@@ -288,7 +322,48 @@
         );
     }
 
-    // Read Laser settings for this run
-    #include "readLaserSettings.H"
+// Read grain fraction variable gg
+Info<< "Reading field gg\n" << endl;
+volScalarField gg
+(
+    IOobject
+    (
+        "gg",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
 
+// Read radius of the grains
+Info<< "Reading field rad\n" << endl;
+volScalarField rad
+(
+    IOobject
+    (
+        "rad",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
+// Read texture of the grains
+Info<< "Reading field theta\n" << endl;
+volScalarField theta
+(
+    IOobject
+    (
+        "theta",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
 

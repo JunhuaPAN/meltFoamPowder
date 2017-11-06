@@ -19,24 +19,3 @@
       y.push_back(ydata);
     }
 
-    /*
-    // Read the laser velocity data
-    std::ifstream vxfile("vxlaser.txt");
-    std::ifstream vyfile("vylaser.txt");
-
-    // Store t, vx, vy in vectors
-    std::vector<scalar> tvx, tvy, vx, vy;
-    scalar vxdata, vydata;
-    // Read x laser data
-    while(vxfile >> tdata >> vxdata)
-    {
-      tvx.push_back(tdata);
-      vx.push_back(xdata);
-    }
-    // Read y laser data
-    while(vyfile >> tdata >> vydata)
-    {
-      tvy.push_back(tdata);
-      vy.push_back(ydata);
-    }
-    */
