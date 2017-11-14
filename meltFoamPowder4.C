@@ -30,7 +30,7 @@ Reference
     Tel.: +49 (921) 55-7163
 
 Application
-    meltFoamPowder3
+    meltFoamPowder4
 
 Description
     Solves a convection dominated solid/liquid phase change process.
