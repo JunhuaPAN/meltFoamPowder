@@ -245,6 +245,7 @@
     );
 
     // Thermal conductivity field
+    /*
     volScalarField lambda
     (
         IOobject
@@ -256,6 +257,7 @@
         pflag*kfactor*(a0 + a1*T) + (1.0-pflag)*(a0 + a1*T)
         //pflag*0.1*(a0 + a1*T) + (1.0-pflag)*(a0 + a1*T)
     );
+    */
 
     // Laser heat source field
     volScalarField edensity

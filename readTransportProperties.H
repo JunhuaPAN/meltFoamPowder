@@ -25,7 +25,8 @@
     //dimensionedScalar lambdaL(transportProperties.lookup("lambdaL"));
 
     // Thermal conductivity reduction for powder
-    dimensionedScalar kfactor(transportProperties.lookup("kfactor"));
+    dimensionedScalar kfactorPP(transportProperties.lookup("kfactorPP")); // Powder-powder
+    dimensionedScalar kfactorPS(transportProperties.lookup("kfactorPS")); // Powder-solid
 
     // Reading heat capacity cp
     dimensionedScalar b0(transportProperties.lookup("b0"));
