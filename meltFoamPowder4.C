@@ -125,10 +125,9 @@ int main(int argc, char *argv[])
         volScalarField R2 = (X-cellx)*(X-cellx) + (Y-celly)*(Y-celly);
 
         // Laser heating source term - turn off after last laser table value
-        if(tval <= tx[tx.size()-1])
-          laserSource = (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*exp(-2.0*R2/(w*w));
-        else
-          laserSource = 0*edensity;
+        laserSource = (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*exp(-2.0*R2/(w*w));
+        if(tval > tx[tx.size()-1])
+          laserSource = 0*laserSource;
 
         #include "readTimeControls.H"
         #include "CourantNo.H"
