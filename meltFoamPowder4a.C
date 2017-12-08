@@ -30,7 +30,7 @@ Reference
     Tel.: +49 (921) 55-7163
 
 Application
-    meltFoamPowder4
+    meltFoamPowder4a
 
 Description
     Solves a convection dominated solid/liquid phase change process.
@@ -150,24 +150,17 @@ int main(int argc, char *argv[])
         gradT = fvc::grad(T);
         dTdt = fvc::ddt(T);
 
-        // Calculate max/min variable values over simulation duration
-        forAll(T, I)
-        {
-          // Max heating rate
-          if(max_dTdt[I] < dTdt[I])
-            max_dTdt[I] = dTdt[I];
-          // Max cooling rate (min heating rate)
-          if(min_dTdt[I] > dTdt[I])
-            min_dTdt[I] = dTdt[I];
-          // Max temperature gradient
-          if(maxMagGradT[I] < mag(gradT[I]))
-            maxMagGradT[I] = mag(gradT[I]);
-        }
+        // Generate outputs for solidification quantification
+        #include "solidificationCalcs.H"
+
+        // Calculate gradient of alpha and see if it is normal vector
+        // to SL interfac
+        grad_alpha = fvc::grad(alpha); 
 
         // Update 'old' laser coordinates for next iteration
         XlaserOld = Xlaser;
         YlaserOld = Ylaser;
-	// Deal with things related to alpha and calculating gg
+	// Deal with things related to alpha and calculating gg etc
         #include "alpha.H"
 
         runTime.write();

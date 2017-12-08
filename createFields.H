@@ -45,6 +45,20 @@
         mag(fvc::grad(T))
     );
 
+    // Create SCALAR field minMagGradT
+    volScalarField minMagGradT
+    (
+        IOobject
+        (
+            "minMagGradT",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mag(fvc::grad(T))
+    );
+
     // Create the field partial(T)/partial(t)
     volScalarField dTdt
     (
@@ -100,6 +114,21 @@
         ),
         mesh
     );
+
+    // Gradient of alpha - for finding normal vector
+    volVectorField grad_alpha
+    (
+        IOobject
+        (
+            "grad_alpha",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        fvc::grad(alpha) 
+    );
+
 
     Info<< "Reading field p_rgh\n" << endl;
     volScalarField p_rgh
@@ -369,3 +398,50 @@ volScalarField theta
     mesh
 );
 
+// Temperature gradient during solidification
+// Units: [T]/[L]
+Info<< "Reading field Gn" << endl;
+volScalarField Gn
+(
+    IOobject
+    (
+        "Gn",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
+// Solidification rate
+// Units: [L]/[time}
+Info<< "Reading field Rdot" << endl;
+volScalarField Rdot
+(
+    IOobject
+    (
+        "Rdot",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
+// Gn/Rdot
+// Units: ([T]/[L])/([L]/[time]) = [T][time]/[L^2]
+Info<< "Reading field Sratio" << endl;
+volScalarField Sratio 
+(
+    IOobject
+    (
+        "Sratio",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
