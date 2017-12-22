@@ -82,6 +82,14 @@ int main(int argc, char *argv[])
     Vlaser[0] = 0.0;
     Vlaser[1] = 0.0;
 
+    // Add code: set tval and deltaT already and calculate xlaserOld from that
+    // scalar tval   = runTime.value();
+    // scalar deltaT = runTime.deltaTValue();
+    // scalar XlaserOld = interp(tval,tx,x);
+    // scalar YlaserOld = interp(tval,ty,y);
+    // Then, chang the following
+    // - Get rid of "scalar" declarations of tval, deltaT, X/YlaserOld
+
     // Initial laser coordinates
     scalar XlaserOld = x[0];
     scalar YlaserOld = y[0];
