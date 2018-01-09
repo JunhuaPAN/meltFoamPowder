@@ -115,6 +115,20 @@
         mesh
     );
 
+    Info<< "Reading field alpha_vap\n" << endl;
+    volScalarField alpha_vap
+    (
+        IOobject
+        (
+            "alpha_vap",
+            runTime.timeName(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh
+    );
+
     // Gradient of alpha - for finding normal vector
     volVectorField grad_alpha
     (
@@ -174,6 +188,12 @@
     (
         "Tmelt", 
         (Tl+Ts)/2.0
+    );
+    
+    dimensionedScalar Tvap
+    (
+        "Tvap", 
+        (Tv2+Tv1)/2.0
     );
 
     // For viscosity calcs, T should be restricted to T > Tl

@@ -32,13 +32,16 @@ forAll(lambdaSurf,I)
     (
         fvm::ddt(cp, T)
       + fvm::div(phi*fvc::interpolate(cp), T)
+      // Melting phase change
       + hs*4.0*exp(-pow(4.0*(T-Tmelt)/(Tl-Ts),2))/Foam::sqrt(pi)/(Tl-Ts)*fvm::ddt(T)
       + hs*4.0*exp(-pow(4.0*(T-Tmelt)/(Tl-Ts),2))/Foam::sqrt(pi)/(Tl-Ts)*(U & fvc::grad(T))
+      // Vaporization Phase change
+      + hv*4.0*exp(-pow(4.0*(T-Tvap)/(Tv2-Tv1),2))/Foam::sqrt(pi)/(Tv2-Tv1)*fvm::ddt(T)
+      + hv*4.0*exp(-pow(4.0*(T-Tvap)/(Tv2-Tv1),2))/Foam::sqrt(pi)/(Tv2-Tv1)*(U & fvc::grad(T))
+      // Conduction
       - fvm::laplacian(lambdaSurf/rho, T)
       //- fvm::laplacian(lambda/rho, T)
       - laserSource
-      //- I0*(1/th)/rho*exp(-2*R2/(w*w))
-      //- I0*(1/th)/rho
     );
 
     TEqn.relax();
@@ -46,6 +49,9 @@ forAll(lambdaSurf,I)
 
     // Update liquid fraction
     alpha = 0.5*Foam::erf(4.0*(T-Tmelt)/(Tl-Ts))+scalar(0.5);
+
+    // Update vapor fraction
+    alpha_vap = 0.5*Foam::erf(4.0*(T-Tvap)/(Tv2-Tv1))+scalar(0.5);
 
     // Update Tvisc
     Tvisc = Foam::max(Tl, T);
