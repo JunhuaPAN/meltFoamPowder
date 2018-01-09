@@ -1,0 +1,39 @@
+What kinds of things do we want for machine learning outputs? They are broken
+down into 2 categories
+1) Post-processing and historical data: record metrics at each point in the
+domain, such as variables during solidification. These can be examined at the
+conclusion of the run
+2) Real-time data: This data should be highly time-sensitive, such as melt pool
+shape or flow characteristics at each point in time. Data should be evaluated
+and stored every N time steps.
+
+Post processing and historical data:
+
+Uniform temperature gradient - try not to have sharp gradients during cooling
+within the system. You may want to output
+- Gradient at start of solidification
+- Gradient at end of solidification
+- Gradient at middle of solidification (closest to alpha = 0.5)
+- Average gradient experienced during solidification
+
+Uniform cooling rate - try not to have sharp variations in temperature. You may
+want to output
+- Cooling rate at start of solidification
+- Cooling rate at end of solidification
+- Cooling rate at middle of solidification (closest to alpha = 0.5)
+- Average cooling rate experienced during solidification
+
+Real-time data
+- Melt pool size: length, width, depth
+--> derivable: aspect ratio
+-  
+
+======================================================================================
+Merit function: 
+- Should take a value between 0 and 1
+- Should weight importance of various factors
+- Should return poor value if small volume of part has highly negative
+  characteristics
+
+M = f(gradT, Tdot, mesh)
+
