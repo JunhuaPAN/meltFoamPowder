@@ -83,16 +83,10 @@ int main(int argc, char *argv[])
     Vlaser[1] = 0.0;
 
     // Add code: set tval and deltaT already and calculate xlaserOld from that
-    // scalar tval   = runTime.value();
-    // scalar deltaT = runTime.deltaTValue();
-    // scalar XlaserOld = interp(tval,tx,x);
-    // scalar YlaserOld = interp(tval,ty,y);
-    // Then, chang the following
-    // - Get rid of "scalar" declarations of tval, deltaT, X/YlaserOld
-
-    // Initial laser coordinates
-    scalar XlaserOld = x[0];
-    scalar YlaserOld = y[0];
+    scalar tval   = runTime.value();
+    scalar deltaT = runTime.deltaTValue();
+    scalar XlaserOld = interp(tval,tx,x);
+    scalar YlaserOld = interp(tval,ty,y);
 
     // Declare Xlaser/Ylaser
     scalar Xlaser, Ylaser;
@@ -104,10 +98,10 @@ int main(int argc, char *argv[])
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
         // Current time value
-        scalar tval = runTime.value();
+        tval = runTime.value();
 
         // Time step value
-        scalar deltaT = runTime.deltaTValue();
+        deltaT = runTime.deltaTValue();
 
         // Current laser coordinates via time-interpolation of input data
         Xlaser = interp(tval,tx,x);
