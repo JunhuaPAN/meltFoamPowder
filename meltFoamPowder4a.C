@@ -154,6 +154,9 @@ int main(int argc, char *argv[])
             }
         }
 
+        // Write max temperature to screen
+        Info << "Tmax = " << Foam::max(T) << nl << endl;
+
         // Calculate any extra quantities necessary
         gradT = fvc::grad(T);
         dTdt = fvc::ddt(T);
