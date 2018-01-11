@@ -97,6 +97,10 @@ int main(int argc, char *argv[])
     // Declare Xlaser/Ylaser
     scalar Xlaser, Ylaser;
 
+    // Declare variables that will help calculate average temperature gradient
+    // and cooling rate experienced during solidification
+    volScalarField tsolidify = 0*runTime.value();
+
     Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.loop())
@@ -174,6 +178,25 @@ int main(int argc, char *argv[])
 	// Deal with things related to alpha and calculating gg etc
         #include "alpha.H"
 
+        // Finalize time averages at the end of each time step; this keeps a
+        // running average and ensures everything gets written to file as the
+        // simulation progresses to avoid losing data in the event of a crash or
+        // if a restart is necessary
+        forAll(T, I)
+        {
+          if(tmelt[I].value() == 0)
+          {
+            Gn_avg[I] = 0;
+            Rdot_avg[I] = 0;
+          }
+          else
+          {
+            Gn_avg[I] = Gn_avg[I]/tmelt[I];
+            Rdot_avg[I] = Rdot_avg[I]/tmelt[I];
+          }
+        }
+
+        // Write data to file (if specified in controlDict)
         runTime.write();
 
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"

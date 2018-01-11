@@ -31,6 +31,7 @@
         fvc::grad(T) 
     );
 
+    /*
     // Create SCALAR field maxMagGradT
     volScalarField maxMagGradT
     (
@@ -58,6 +59,7 @@
         ),
         mag(fvc::grad(T))
     );
+    */
 
     // Create the field partial(T)/partial(t)
     volScalarField dTdt
@@ -73,6 +75,7 @@
         fvc::ddt(T) 
     );
 
+    /*
     // Create the field max(dTdt) (max heating rate)
     volScalarField max_dTdt
     (
@@ -100,6 +103,7 @@
         ),
         fvc::ddt(T) 
     );
+    */
 
     Info<< "Reading field alpha\n" << endl;
     volScalarField alpha

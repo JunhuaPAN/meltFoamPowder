@@ -2,6 +2,7 @@
 // Calculate max/min variable values over simulation duration
 forAll(T, I)
 {
+  /*
   // Max heating rate
   if(max_dTdt[I] < dTdt[I])
     max_dTdt[I] = dTdt[I];
@@ -13,6 +14,7 @@ forAll(T, I)
     maxMagGradT[I] = mag(gradT[I]);
   if(minMagGradT[I] > mag(gradT[I]))
     minMagGradT[I] = mag(gradT[I]);
+  */
 
   /* Calculate the values of the following durring solidification:
      - Temperature gradient magnitude Gn = mag(gradT)
@@ -46,4 +48,37 @@ forAll(T, I)
     else
       Sratio[I] = Gn[I]/Rdot[I]; // Positive since Rdot > 0
   }
+
+
+  // Calculate extra quantities for values at start/stop of solidification and
+  // average value during
+
+  // Start of solidification
+  if(alpha[I] > 0 && alpha.oldTime[I] == 1)
+  {
+    Gn_start[I] = Gn[I];
+    Rdot_start[I] = Rdot[I];
+  }
+  // End of solidification
+  if(T[I] <= Ts.value() && alpha.oldTime[I] > 0)
+  {
+    Gn_end[I] = Gn[I];
+    Rdot_end[I] = Rdot[I];
+  }
+  // Middle of solidification
+  if(alpha.oldTime[I] < 0.5 && alpha[I] < 0.5)
+  {
+    Gn_middle[I] = Gn[I];
+    Rdot_middle[I] = Rdot[I];
+  }
+  // Accumulate averages and solidification time for the cell
+  if(dTdt[I] < 0 && T[I] > Ts.value() )
+  {
+    // Accumulate total melting time
+    tmelt[I] = tmelt[I] + deltaT.value();
+    // Accumulate time-weighted sums of quantities for time averaging
+    Gn_avg[I] = Gn_avg[I] + Gn[I]*deltaT.value();
+    Rdot_avg[I] = Rdot_avg[I] + Rdot[I]*deltaT.value();
+  }
+
 }
