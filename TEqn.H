@@ -65,19 +65,6 @@ forAll(lambdaSurf,I)
 
     // Update heat capacity
     cp = b0 + b1*T;
-    // Loop over cells to determine if heat capacity should be modified for a
-    // vaporized phase change region
-    /*
-    forAll(T, I)
-    {
-      if(T[I] >= 3300.0 && T[I] <= 3400.0)
-        //continue;
-        cp[I] = 3.0e7; // deltaH/(Tv2 - Tv1)
-        //cp[I] = 3.0e10; // deltaH/(Tv2 - Tv1)
-        //cp[I] = 3000000.0e4/(3400.0 - 3300.0); // deltaH/(Tv2 - Tv1)
-    }
-    */
-
     
     // Update conductivity
     //lambda = pflag*kfactor*(a0 + a1*T) + (1-pflag)*(a0 + a1*T);
