@@ -29,9 +29,13 @@ forAll(T, I)
     Rdot[I]   = 0;
     Sratio[I] = 0;
   }
-  // Calculation is made only if region is fluid and is cooling down
+  // Calculation is made only if region is mushy and is cooling down
   else if(dTdt[I] < 0 && alpha[I] > 0.001 && alpha[I] < 0.999)
   {
+    //===================================================================
+    // The following are calculated as the last observed value during the
+    // solidification procedure (at end of solidification)
+    //===================================================================
     // Temperature gradient magnitude
     Gn[I] = mag(gradT[I]);
     // Solidification rate
@@ -47,38 +51,38 @@ forAll(T, I)
       Sratio[I] = 0;
     else
       Sratio[I] = Gn[I]/Rdot[I]; // Positive since Rdot > 0
-  }
+    // Add Tdot!
+    // < Tdot code here > 
+    //===================================================================
 
+    // This is a cool-down timestep, so accumulate time spent undergoing
+    // solidification
+    tsolid[I] = tsolid[I] + deltaT;
+    //tsolid[I] = tsolid[I] + deltaT.value();
 
-  // Calculate extra quantities for values at start/stop of solidification and
-  // average value during
+    // Record variables if this is the start of solidification
+    if(alpha.oldTime()[I] > 0.999)
+    {
+      Gn_start[I] = Gn[I];
+      Rdot_start[I] = Rdot[I];
+      // Add Tdot!
+    }
+    /*
+    // Middle of solidification
+    if(alpha.oldTime()[I] > 0.5 && alpha[I] <= 0.5)
+    {
+      Gn_middle[I] = Gn[I];
+      Rdot_middle[I] = Rdot[I];
+      // Add Tdot!
+    }
+    */
 
-  // Start of solidification
-  if(alpha[I] > 0 && alpha.oldTime[I] == 1)
-  {
-    Gn_start[I] = Gn[I];
-    Rdot_start[I] = Rdot[I];
-  }
-  // End of solidification
-  if(T[I] <= Ts.value() && alpha.oldTime[I] > 0)
-  {
-    Gn_end[I] = Gn[I];
-    Rdot_end[I] = Rdot[I];
-  }
-  // Middle of solidification
-  if(alpha.oldTime[I] < 0.5 && alpha[I] < 0.5)
-  {
-    Gn_middle[I] = Gn[I];
-    Rdot_middle[I] = Rdot[I];
-  }
-  // Accumulate averages and solidification time for the cell
-  if(dTdt[I] < 0 && T[I] > Ts.value() )
-  {
-    // Accumulate total melting time
-    tmelt[I] = tmelt[I] + deltaT.value();
-    // Accumulate time-weighted sums of quantities for time averaging
-    Gn_avg[I] = Gn_avg[I] + Gn[I]*deltaT.value();
-    Rdot_avg[I] = Rdot_avg[I] + Rdot[I]*deltaT.value();
+    // Accumulate time-averages
+    Gn_avg[I] = Gn_avg[I] + Gn[I]*deltaT/tscale.value();
+    //Gn_avg[I] = Gn_avg[I] + Gn[I]*deltaT.value()/tscale.value();
+    Rdot_avg[I] = Rdot_avg[I] + Rdot[I]*deltaT/tscale.value();
+    //Rdot_avg[I] = Rdot_avg[I] + Rdot[I]*deltaT.value()/tscale.value();
+    // Add Tdot!
   }
 
 }

@@ -97,10 +97,6 @@ int main(int argc, char *argv[])
     // Declare Xlaser/Ylaser
     scalar Xlaser, Ylaser;
 
-    // Declare variables that will help calculate average temperature gradient
-    // and cooling rate experienced during solidification
-    volScalarField tsolidify = 0*runTime.value();
-
     Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.loop())
@@ -132,6 +128,10 @@ int main(int argc, char *argv[])
         volScalarField celly = mesh.C().component(1);
         dimensionedScalar X("X",dimensionSet(0,1,0,0,0,0,0),Xlaser);
         dimensionedScalar Y("Y",dimensionSet(0,1,0,0,0,0,0),Ylaser);
+
+        // Make 'tscale' variable for use in keeping units consistent in time
+        // averaging
+        dimensionedScalar tscale("tscale",dimensionSet(0,0,1,0,0,0,0),1.0);
 
         // Square of distance from laser center
         volScalarField R2 = (X-cellx)*(X-cellx) + (Y-celly)*(Y-celly);
@@ -184,15 +184,15 @@ int main(int argc, char *argv[])
         // if a restart is necessary
         forAll(T, I)
         {
-          if(tmelt[I].value() == 0)
+          if(tsolid[I] == 0.0)
           {
             Gn_avg[I] = 0;
             Rdot_avg[I] = 0;
           }
           else
           {
-            Gn_avg[I] = Gn_avg[I]/tmelt[I];
-            Rdot_avg[I] = Rdot_avg[I]/tmelt[I];
+            Gn_avg[I] = Gn_avg[I]*tscale.value()/tsolid[I];
+            Rdot_avg[I] = Rdot_avg[I]*tscale.value()/tsolid[I];
           }
         }
 

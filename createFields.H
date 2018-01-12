@@ -422,6 +422,23 @@ volScalarField theta
     mesh
 );
 
+// tsolid = solidification time
+// Units: Time
+Info<< "Reading field tsolid" << endl;
+volScalarField tsolid
+(
+    IOobject
+    (
+        "tsolid",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+    //dimensionedScalar("tsolid", dimTime, 0.0)
+);
+
 // Temperature gradient during solidification
 // Units: [T]/[L]
 Info<< "Reading field Gn" << endl;
@@ -437,6 +454,48 @@ volScalarField Gn
     ),
     mesh
 );
+Info<< "Reading field Gn_avg" << endl;
+volScalarField Gn_avg
+(
+    IOobject
+    (
+        "Gn_avg",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+Info<< "Reading field Gn_start" << endl;
+volScalarField Gn_start
+(
+    IOobject
+    (
+        "Gn_start",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+/*
+Info<< "Reading field Gn_middle" << endl;
+volScalarField Gn_middle
+(
+    IOobject
+    (
+        "Gn_middle",
+        runTime.timeName(),
+        mesh,
+        IOobject::READ_IF_PRESENT,
+        IOobject::AUTO_WRITE
+    ),
+    //mesh,
+    Gn
+);
+*/
 
 // Solidification rate
 // Units: [L]/[time}
@@ -453,6 +512,48 @@ volScalarField Rdot
     ),
     mesh
 );
+Info<< "Reading field Rdot_avg" << endl;
+volScalarField Rdot_avg
+(
+    IOobject
+    (
+        "Rdot_avg",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+Info<< "Reading field Rdot_start" << endl;
+volScalarField Rdot_start
+(
+    IOobject
+    (
+        "Rdot_start",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+/*
+Info<< "Reading field Rdot_middle" << endl;
+volScalarField Rdot_middle
+(
+    IOobject
+    (
+        "Rdot_middle",
+        runTime.timeName(),
+        mesh,
+        IOobject::READ_IF_PRESENT,
+        IOobject::AUTO_WRITE
+    ),
+    //mesh,
+    Rdot
+);
+*/
 
 // Gn/Rdot
 // Units: ([T]/[L])/([L]/[time]) = [T][time]/[L^2]
