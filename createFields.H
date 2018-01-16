@@ -288,6 +288,9 @@
     );
     */
 
+    // Modify c1 based on difference between th and th0
+    c1 = c1*(th/th0);
+
     // Laser heat source field
     volScalarField edensity
     (
@@ -299,7 +302,8 @@
             IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        c3*pow(depth/c1,c2-1)*exp(-pow(depth/c1,c2))
+        Efrac*c2/c1*pow(depth/c1,c2-1.0)*exp(-pow(depth/c1,c2))
+        //c3*pow(depth/c1,c2-1)*exp(-pow(depth/c1,c2))
     );
 
     volScalarField laserSource
