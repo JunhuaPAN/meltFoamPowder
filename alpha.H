@@ -68,7 +68,7 @@ scalar Tdot = gradT[i].x()*Vlaser[0]+ gradT[i].y()*Vlaser[1];
 
   {
 
-        if((((alpha.oldTime())[i])>0.99999)||(((alpha.oldTime())[i])<0.00001))
+        if((((alpha.oldTime())[i])>0.99999))    	//||(((alpha.oldTime())[i])<0.00001))
 
 
 	{
@@ -80,6 +80,8 @@ scalar Tdot = gradT[i].x()*Vlaser[0]+ gradT[i].y()*Vlaser[1];
 
 
      if((Foam::sqrt((gradT[i].x())*(gradT[i].x())+(gradT[i].y())*(gradT[i].y())+(gradT[i].z())*(gradT[i].z()))*Foam::sqrt((Vlaser[0]*Vlaser[0])+(Vlaser[1]*Vlaser[1])))>1e-6)
+
+	{
 
      //calculate the angle between the [001] (direcion of gradT) and laser direction
 
