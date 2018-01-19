@@ -418,6 +418,99 @@ volScalarField theta
     mesh
 );
 
+// Read start of the cooling rate
+Info<< "Reading field Tdot_1\n" << endl;
+volScalarField Tdot_1
+(
+    IOobject
+    (
+        "Tdot_1",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
+// Read end of the cooling rate
+Info<< "Reading field Tdot_2\n" << endl;
+volScalarField Tdot_2
+(
+    IOobject
+    (
+        "Tdot_2",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
+// Read start time of solidification
+Info<< "Reading field Start_time\n" << endl;
+volScalarField Start_time
+(
+    IOobject
+    (
+        "Start_time",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
+
+// Read end time of solidification
+Info<< "Reading field End_time\n" << endl;
+volScalarField End_time
+(
+    IOobject
+    (
+        "End_time",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
+
+// Read time of solidification
+Info<< "Reading field tf\n" << endl;
+volScalarField tf
+(
+    IOobject
+    (
+        "tf",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
+
+// Read SDAS
+Info<< "Reading field SDAS\n" << endl;
+volScalarField SDAS
+(
+    IOobject
+    (
+        "SDAS",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
 // Temperature gradient during solidification
 // Units: [T]/[L]
 Info<< "Reading field Gn" << endl;
