@@ -21,9 +21,13 @@ forAll(lambdaSurf,I)
   // This case is powder-fluid or powder-solid
   else if(pflagSurf[I] > 0)
   {
-    // Let conductivity be in between powder-solid (worst) and powder-fluid
-    // (best, = 1.0) defined as a mixture governed by alpha
-    lambdaSurf[I] = (kfactorPS.value() + (1.0-kfactorPS.value())*alphaSurf[I])*lambdaSurf[I];
+    // Conduction facilitated if interface is very liquidy
+    if(alphaSurf[I] > 0.9)
+      lambdaSurf[I] = (kfactorPS.value() + (1.0-kfactorPS.value())*alphaSurf[I])*lambdaSurf[I];
+    // Otherwise, the conduction should retain the powder-solid interaction
+    // value
+    else
+      lambdaSurf[I] = kfactorPS.value()*lambdaSurf[I];
   }
 }
 
