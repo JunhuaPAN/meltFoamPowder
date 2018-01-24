@@ -115,6 +115,20 @@
         mesh
     );
 
+    Info<< "Reading field alpha_vap\n" << endl;
+    volScalarField alpha_vap
+    (
+        IOobject
+        (
+            "alpha_vap",
+            runTime.timeName(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh
+    );
+
     // Gradient of alpha - for finding normal vector
     volVectorField grad_alpha
     (
@@ -174,6 +188,12 @@
     (
         "Tmelt", 
         (Tl+Ts)/2.0
+    );
+    
+    dimensionedScalar Tvap
+    (
+        "Tvap", 
+        (Tv2+Tv1)/2.0
     );
 
     // For viscosity calcs, T should be restricted to T > Tl
@@ -289,7 +309,7 @@
     */
 
     // Modify c1 based on difference between th and th0
-    c1 = c1*(th/th0);
+    //c1 = c1*(th/th0);
 
     // Laser heat source field
     volScalarField edensity
@@ -302,7 +322,8 @@
             IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        Efrac*c2/c1*pow(depth/c1,c2-1.0)*exp(-pow(depth/c1,c2))
+        Efrac/OPD*exp(-depth/OPD) // c2 is energy absoprtion, c1 is OPD
+        //Efrac*c2/c1*pow(depth/c1,c2-1.0)*exp(-pow(depth/c1,c2))
         //c3*pow(depth/c1,c2-1)*exp(-pow(depth/c1,c2))
     );
 

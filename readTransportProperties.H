@@ -43,11 +43,18 @@
     // Reading latent heat of fusion hs
     dimensionedScalar hs(transportProperties.lookup("hs"));
 
+    // Reading latent heat of vaporization
+    dimensionedScalar hv(transportProperties.lookup("hv"));
+
     // Reading solid bound of melting temperature Ts
     dimensionedScalar Ts(transportProperties.lookup("Ts"));
 
     // Reading liquid bound of melting temperature Tl
     dimensionedScalar Tl(transportProperties.lookup("Tl"));
+
+    // Reading vaporization temperature ranges
+    dimensionedScalar Tv1(transportProperties.lookup("Tv1"));
+    dimensionedScalar Tv2(transportProperties.lookup("Tv2"));
 
     // Reading volume expansion factor beta
     dimensionedScalar beta(transportProperties.lookup("beta"));

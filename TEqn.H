@@ -21,13 +21,23 @@ forAll(lambdaSurf,I)
   // This case is powder-fluid or powder-solid
   else if(pflagSurf[I] > 0)
   {
+    // Reduce the conductivity if interpolation temperature is less than
+    // liquidus
+    if(Tsurf[I] < Tl.value())
+      lambdaSurf[I] = kfactorPS.value()*lambdaSurf[I];
+
+    // Otherwise, Fully liquid-powder contact should take on the higher melt
+    // conductivity because the liquid contacts it fully and fills in gaps
+
+    /*
     // Conduction facilitated if interface is very liquidy
-    if(alphaSurf[I] > 0.9)
+    if(alphaSurf[I] >= alphaCondLim)
       lambdaSurf[I] = (kfactorPS.value() + (1.0-kfactorPS.value())*alphaSurf[I])*lambdaSurf[I];
     // Otherwise, the conduction should retain the powder-solid interaction
     // value
     else
       lambdaSurf[I] = kfactorPS.value()*lambdaSurf[I];
+    */
   }
 }
 
@@ -36,13 +46,16 @@ forAll(lambdaSurf,I)
     (
         fvm::ddt(cp, T)
       + fvm::div(phi*fvc::interpolate(cp), T)
+      // Melting phase change
       + hs*4.0*exp(-pow(4.0*(T-Tmelt)/(Tl-Ts),2))/Foam::sqrt(pi)/(Tl-Ts)*fvm::ddt(T)
       + hs*4.0*exp(-pow(4.0*(T-Tmelt)/(Tl-Ts),2))/Foam::sqrt(pi)/(Tl-Ts)*(U & fvc::grad(T))
+      // Vaporization Phase change
+      + hv*4.0*exp(-pow(4.0*(T-Tvap)/(Tv2-Tv1),2))/Foam::sqrt(pi)/(Tv2-Tv1)*fvm::ddt(T)
+      + hv*4.0*exp(-pow(4.0*(T-Tvap)/(Tv2-Tv1),2))/Foam::sqrt(pi)/(Tv2-Tv1)*(U & fvc::grad(T))
+      // Conduction
       - fvm::laplacian(lambdaSurf/rho, T)
       //- fvm::laplacian(lambda/rho, T)
       - laserSource
-      //- I0*(1/th)/rho*exp(-2*R2/(w*w))
-      //- I0*(1/th)/rho
     );
 
     TEqn.relax();
