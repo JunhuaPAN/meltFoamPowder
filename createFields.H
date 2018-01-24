@@ -31,68 +31,12 @@
         fvc::grad(T) 
     );
 
-    // Create SCALAR field maxMagGradT
-    volScalarField maxMagGradT
-    (
-        IOobject
-        (
-            "maxMagGradT",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mag(fvc::grad(T))
-    );
-
-    // Create SCALAR field minMagGradT
-    volScalarField minMagGradT
-    (
-        IOobject
-        (
-            "minMagGradT",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mag(fvc::grad(T))
-    );
-
     // Create the field partial(T)/partial(t)
     volScalarField dTdt
     (
         IOobject
         (
             "dTdt",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        fvc::ddt(T) 
-    );
-
-    // Create the field max(dTdt) (max heating rate)
-    volScalarField max_dTdt
-    (
-        IOobject
-        (
-            "max_dTdt",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        fvc::ddt(T) 
-    );
-
-    // Create the field min(dTdt) (max cooling rate)
-    volScalarField min_dTdt
-    (
-        IOobject
-        (
-            "min_dTdt",
             runTime.timeName(),
             mesh,
             IOobject::NO_READ,
@@ -431,6 +375,22 @@ volScalarField Gn
     IOobject
     (
         "Gn",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
+// Cooling rate during solidification
+// Units: [T]/[time]
+Info<< "Reading field CR" << endl;
+volScalarField CR
+(
+    IOobject
+    (
+        "CR",
         runTime.timeName(),
         mesh,
         IOobject::MUST_READ,
