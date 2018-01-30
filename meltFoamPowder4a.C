@@ -46,8 +46,8 @@ Description
 // Use c++ vectors
 #include <vector>
 
-// Read file
-#include <fstream>
+// OpenFoam writing to file
+#include "OFstream.H"
 
 // Custom interpolation function
 #include "interp.H"
@@ -90,6 +90,18 @@ int main(int argc, char *argv[])
 
     // Declare Xlaser/Ylaser
     scalar Xlaser, Ylaser;
+
+    // To work with parallel
+    // - OFstream is openfoam's version of iostream/ofstream/etc
+    // - Pstream::master() only does the writing if it is the main rank 0 proc
+    // - Pointer setup is probably to make sure the other procs don't write a
+    //   file
+    OFstream *outfilePtr = NULL;
+    if(Pstream::master())
+    {
+      // Open the file
+      outfilePtr = new OFstream("meltPoolGeom.txt");
+    }
 
     Info<< "\nStarting time loop\n" << endl;
 
@@ -168,6 +180,9 @@ int main(int argc, char *argv[])
 	// Deal with things related to alpha and calculating gg etc
         #include "alpha.H"
 
+        // Output information about the geometry of the melt pool
+        #include "calcMeltPoolGeom.H"
+
         runTime.write();
 
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
@@ -176,6 +191,9 @@ int main(int argc, char *argv[])
     }
 
     Info<< "End\n" << endl;
+
+    // Close the melt pool geometry file
+    //os.close();
 
     return 0;
 }

@@ -1,3 +1,3 @@
 meltFoamPowder4a.C
 
-EXE = $(FOAM_USER_APPBIN)/meltFoamPowder4a_opd_CR
+EXE = $(FOAM_USER_APPBIN)/meltFoamPowder4a_opd_MP
