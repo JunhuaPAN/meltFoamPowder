@@ -81,10 +81,13 @@ else
 //outfile << std::fixed;
 
 // For writing in parallel
+// Format: <time, xlaser, ylaser, Lx, Ly, Lz>
 if(Pstream::master())
 {
   OFstream& outfile = *outfilePtr;
   outfile << runTime.timeName() << tab
+          << Xlaser << tab
+          << Ylaser << tab
           << Lx << tab
           << Ly << tab
           << Lz << endl;
