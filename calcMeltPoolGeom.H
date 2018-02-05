@@ -1,16 +1,24 @@
 // Melt pool dimension placeholders
 scalar Lx, Ly, Lz;
 
+// Define the scan direction by angle theta using the velocity vectors for the
+// current time step
+scalar theta = Foam::atan2(Vlaser[0],Vlaser[1]);
+
 // Mesh cell coordinates for local processor
 scalarField cx = mesh.C().component(0);
 scalarField cy = mesh.C().component(1);
 scalarField cz = mesh.C().component(2);
 
+// Rotate the x and y mesh coordinate fields by NEGATIVE theta
+scalarField cxrot = Foam::cos(theta)*cx - Foam::sin(theta)*cy;
+scalarField cyrot = Foam::sin(theta)*cx + Foam::cos(theta)*cy;
+
 // Default min/max coordinate values for local processor
-scalar xmin = max(cx);
-scalar xmax = min(cx);
-scalar ymin = max(cy);
-scalar ymax = min(cy);
+scalar xmin = max(cxrot);
+scalar xmax = min(cxrot);
+scalar ymin = max(cyrot);
+scalar ymax = min(cyrot);
 scalar zmin = max(cz);
 scalar zmax = min(cz);
 
@@ -33,14 +41,14 @@ forAll(alpha, I)
 {
   if(alpha[I] > minfrac)
   {
-    if(cx[I] < xmin)
-      xmin = cx[I];
-    if(cx[I] > xmax)
-      xmax = cx[I];
-    if(cy[I] < ymin)
-      ymin = cy[I];
-    if(cy[I] > ymax)
-      ymax = cy[I];
+    if(cxrot[I] < xmin)
+      xmin = cxrot[I];
+    if(cxrot[I] > xmax)
+      xmax = cxrot[I];
+    if(cyrot[I] < ymin)
+      ymin = cyrot[I];
+    if(cyrot[I] > ymax)
+      ymax = cyrot[I];
     if(cz[I] < zmin)
       zmin = cz[I];
     if(cz[I] > zmax)
