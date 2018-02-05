@@ -24,8 +24,8 @@ reduce(ymax, minOp<scalar>());
 reduce(zmin, maxOp<scalar>());
 reduce(zmax, minOp<scalar>());
 
-// Set minimum value to quality as part of melt pool
-scalar minfrac = 0.1;
+// Set minimum value to qualify as part of melt pool
+scalar minfrac = 0.99;
 
 // Looping on alpha loops on cells
 scalar alphamax = 0;
