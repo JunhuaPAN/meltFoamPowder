@@ -1,18 +1,20 @@
 // Melt pool dimension placeholders
 scalar Lx, Ly, Lz;
 
-// Define the scan direction by angle theta using the velocity vectors for the
+// Define the scan direction by angle ang using the velocity vectors for the
 // current time step
-scalar theta = Foam::atan2(Vlaser[0],Vlaser[1]);
+scalar ang = Foam::atan2(Vlaser[1],Vlaser[0]);
+
+Info << "Scan angle = " << (180.0/3.14)*ang << endl;
 
 // Mesh cell coordinates for local processor
 scalarField cx = mesh.C().component(0);
 scalarField cy = mesh.C().component(1);
 scalarField cz = mesh.C().component(2);
 
-// Rotate the x and y mesh coordinate fields by NEGATIVE theta
-scalarField cxrot = Foam::cos(theta)*cx - Foam::sin(theta)*cy;
-scalarField cyrot = Foam::sin(theta)*cx + Foam::cos(theta)*cy;
+// Rotate the x and y mesh coordinate fields by NEGATIVE ang
+scalarField cxrot = Foam::cos(ang)*cx + Foam::sin(ang)*cy;
+scalarField cyrot = Foam::sin(ang)*cx - Foam::cos(ang)*cy;
 
 // Default min/max coordinate values for local processor
 scalar xmin = max(cxrot);
