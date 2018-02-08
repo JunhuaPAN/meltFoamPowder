@@ -1,21 +1,15 @@
 
     // Read the array of x and y laser coordinates from file
-    std::ifstream xfile("xlaser.txt");
-    std::ifstream yfile("ylaser.txt");
+    std::ifstream xyfile("xylaser.txt");
 
     // Store t, x, y in vectors
-    std::vector<scalar> tx, ty, x, y;
+    std::vector<scalar> t, x, y;
     scalar tdata, xdata, ydata;
-    // Read x laser data
-    while(xfile >> tdata >> xdata)
+    // Read xy laser data
+    while(xyfile >> tdata >> xdata >> ydata)
     {
-      tx.push_back(tdata);
+      t.push_back(tdata);
       x.push_back(xdata);
-    }
-    // Read y laser data
-    while(yfile >> tdata >> ydata)
-    {
-      ty.push_back(tdata);
       y.push_back(ydata);
     }
 

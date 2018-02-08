@@ -85,8 +85,8 @@ int main(int argc, char *argv[])
     // Add code: set tval and deltaT already and calculate xlaserOld from that
     scalar tval   = runTime.value();
     scalar deltaT = runTime.deltaTValue();
-    scalar XlaserOld = interp(tval,tx,x);
-    scalar YlaserOld = interp(tval,ty,y);
+    scalar XlaserOld = interp(tval,t,x);
+    scalar YlaserOld = interp(tval,t,y);
 
     // Declare Xlaser/Ylaser
     scalar Xlaser, Ylaser;
@@ -116,8 +116,8 @@ int main(int argc, char *argv[])
         deltaT = runTime.deltaTValue();
 
         // Current laser coordinates via time-interpolation of input data
-        Xlaser = interp(tval,tx,x);
-        Ylaser = interp(tval,ty,y);
+        Xlaser = interp(tval,t,x);
+        Ylaser = interp(tval,t,y);
 
         // Calculate laser velocity based on old coordinate values
         Vlaser[0] = (Xlaser - XlaserOld)/deltaT;
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 
         // Laser heating source term - turn off after last laser table value
         laserSource = (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*exp(-2.0*R2/(w*w));
-        if(tval > tx[tx.size()-1])
+        if(tval > t[t.size()-1])
           laserSource = 0*laserSource;
 
         #include "readTimeControls.H"
