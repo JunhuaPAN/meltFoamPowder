@@ -13,8 +13,9 @@ scalarField cy = mesh.C().component(1);
 scalarField cz = mesh.C().component(2);
 
 // Rotate the x and y mesh coordinate fields by NEGATIVE ang
-scalarField cxrot = Foam::cos(ang)*cx + Foam::sin(ang)*cy;
-scalarField cyrot = Foam::sin(ang)*cx - Foam::cos(ang)*cy;
+ang = -ang;
+scalarField cxrot = Foam::cos(ang)*cx - Foam::sin(ang)*cy;
+scalarField cyrot = Foam::sin(ang)*cx + Foam::cos(ang)*cy;
 
 // Default min/max coordinate values for local processor
 scalar xmin = max(cxrot);
