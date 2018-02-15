@@ -271,6 +271,7 @@
         //c3*pow(depth/c1,c2-1)*exp(-pow(depth/c1,c2))
     );
 
+    /*
     volScalarField laserSource
     (
         IOobject
@@ -283,6 +284,7 @@
         ),
         (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*0.0
     );
+    */
 
     Info<< "Calculating field g.h\n" << endl;
     volScalarField gh("gh", g & mesh.C());

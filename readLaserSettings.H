@@ -11,7 +11,7 @@
     );
 
     // Reading power P
-    dimensionedScalar P(laserSettings.lookup("P"));
+    //dimensionedScalar P(laserSettings.lookup("P"));
 
     // Reading effective laser absorptivity beta
     dimensionedScalar Efrac(laserSettings.lookup("Efrac"));
