@@ -129,6 +129,7 @@ int main(int argc, char *argv[])
         Info << "Vx   = " << Vlaser[0] << endl;
         Info << "Vy   = " << Vlaser[1] << endl;
         Info << "Vmag = " << Vmag << nl << endl;
+        Info << "P    = " << Plaser/1e7 << nl << endl;
 
         // Make distance from laser center a volScalarField
         volScalarField cellx = mesh.C().component(0);
