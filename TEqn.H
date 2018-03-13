@@ -1,20 +1,14 @@
 // Solving the energy equation
 
-// Create surface field Tsurf which is T interpolated at the face centers of the
-// grid
+// Create surface field Tsurf which is T interpolated at the face centers of the grid
 surfaceScalarField Tsurf(fvc::interpolate(T));
-//surfaceScalarField Tsurf = fvc::interpolate(T);
 
 // Interpolate the pflag and alpha fields to face centers
 surfaceScalarField pflagSurf(fvc::interpolate(pflag));
 surfaceScalarField alphaSurf(fvc::interpolate(alpha));
-//surfaceScalarField pflagSurf = fvc::interpolate(pflag);
-//surfaceScalarField alphaSurf = fvc::interpolate(alpha);
 
-// Assign conductivity based on pflagSurf - default to material conductivity
+// Assign conductivity based on pflagSurf - default value is solid phase conductivity
 surfaceScalarField lambdaSurf(a0 + a1*Tsurf);
-//surfaceScalarField lambdaSurf = a0 + a1*Tsurf;
-//surfaceScalarField lambdaSurf = pflagSurf;
 forAll(lambdaSurf,I)
 {
   // If pflagSurf = 1 then it is powder-powder interface and should have reduced
@@ -22,26 +16,13 @@ forAll(lambdaSurf,I)
   if(pflagSurf[I] == 1)
     lambdaSurf[I] = kfactorPP.value()*lambdaSurf[I];
   // This handles pflagSurf > 0 and < 1 since == 1 is already tested
-  // This case is powder-fluid or powder-solid
+  // Indicates the interface is powder-fluid or powder-solid
   else if(pflagSurf[I] > 0)
   {
     // Reduce the conductivity if interpolation temperature is less than
-    // liquidus
     if(Tsurf[I] < Tl.value())
       lambdaSurf[I] = kfactorPS.value()*lambdaSurf[I];
 
-    // Otherwise, Fully liquid-powder contact should take on the higher melt
-    // conductivity because the liquid contacts it fully and fills in gaps
-
-    /*
-    // Conduction facilitated if interface is very liquidy
-    if(alphaSurf[I] >= alphaCondLim)
-      lambdaSurf[I] = (kfactorPS.value() + (1.0-kfactorPS.value())*alphaSurf[I])*lambdaSurf[I];
-    // Otherwise, the conduction should retain the powder-solid interaction
-    // value
-    else
-      lambdaSurf[I] = kfactorPS.value()*lambdaSurf[I];
-    */
   }
 }
 
@@ -58,7 +39,7 @@ forAll(lambdaSurf,I)
       + hv*4.0*exp(-pow(4.0*(T-Tvap)/(Tv2-Tv1),2))/Foam::sqrt(pi)/(Tv2-Tv1)*(U & fvc::grad(T))
       // Conduction
       - fvm::laplacian(lambdaSurf/rho, T)
-      //- fvm::laplacian(lambda/rho, T)
+      // Laser heating source
       - laserSource
     );
 
@@ -80,30 +61,9 @@ forAll(lambdaSurf,I)
 
     // Update heat capacity
     cp = b0 + b1*T;
-    // Loop over cells to determine if heat capacity should be modified for a
-    // vaporized phase change region
-    /*
-    forAll(T, I)
-    {
-      if(T[I] >= 3300.0 && T[I] <= 3400.0)
-        //continue;
-        cp[I] = 3.0e7; // deltaH/(Tv2 - Tv1)
-        //cp[I] = 3.0e10; // deltaH/(Tv2 - Tv1)
-        //cp[I] = 3000000.0e4/(3400.0 - 3300.0); // deltaH/(Tv2 - Tv1)
-    }
-    */
 
-    
-    // Update conductivity
-    //lambda = pflag*kfactor*(a0 + a1*T) + (1-pflag)*(a0 + a1*T);
-    //lambda = pflag*0.1*(a0 + a1*T) + (1-pflag)*(a0 + a1*T);
-    //lambda = a0 + a1*T;
-    //lambda = alpha*lambdaL+(1.0-alpha)*lambdaS;
-
-    // Update kinematic viscosity
+    // Update kinematic viscosity - temperature Tvisc > Tl
     nu = mu0*exp(A/Tvisc)/rho;
-    //nu = mu0*exp(A/T)/rho;
-    //nu = alpha*nuL+(1.0-alpha)*nuS;
 
     // Update dynamic viscosity as well
     mu = nu*rho;

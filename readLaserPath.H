@@ -6,10 +6,9 @@
     std::vector<scalar> t, x, y, power;
     
     // If file is empty, 't' vector will contain one entry (start time) and x/y
-    // vectors will contain arbitrary coordinate
+    // vectors will contain arbitrary coordinate (chosen to be 0.0)
     bool is_empty = (xyfile.peek()==std::ifstream::traits_type::eof());
     if(is_empty)
-    //if(xyfile.peek() == std::ifstream::traits_type::eof())
     {
       t.push_back(runTime.value());
       x.push_back(0.0);

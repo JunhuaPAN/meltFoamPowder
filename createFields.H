@@ -15,9 +15,7 @@
 
     // Create depth field as (max(z) - z) on the mesh (CGS units)
     volScalarField cellz(mesh.C().component(2));
-    //volScalarField cellz = mesh.C().component(2);
     volScalarField depth(max(cellz) - cellz);
-    //volScalarField depth = max(centers.component(2)) - centers.component(2);
 
     // Create the field gradT
     volVectorField gradT
@@ -123,6 +121,7 @@
     // Reading transport properties
     Info<< "Reading thermophysical properties\n" << endl;
     #include "readTransportProperties.H"
+
     // Read Laser settings for this run
     Info<< "Reading laser settings\n" << endl;
     #include "readLaserSettings.H"
@@ -143,9 +142,6 @@
     );
 
     // For viscosity calcs, T should be restricted to T > Tl
-    //volScalarField Tvisc("Tvisc",Foam::max(Tl, T));
-    //volScalarField Tvisc("Tvisc",T);
-    //Tvisc = Foam::max(Tl, T);
     volScalarField Tvisc
     (
         IOobject
@@ -183,7 +179,6 @@
         DCl*Foam::pow(1.0-alpha,2)/(Foam::pow(alpha,3)+DCs)
     );
 
-
     // Heat capacity field
     volScalarField cp
     (
@@ -194,8 +189,6 @@
             mesh
         ),
         b0 + b1*T
-        //360.57e4 + 0.2733e4*T
-        //alpha*cpL+(1.0-alpha)*cpS
     );
 
     // Kinematic viscosity field
@@ -208,8 +201,6 @@
             mesh
         ),
         mu0*exp(A/Tvisc)/rho
-        //mu0*exp(A/T)/rho
-        //alpha*nuL+(1.0-alpha)*nuS
     );
 
     // Add dynamic field so it can be accessed by Marangoni BC
@@ -239,24 +230,6 @@
         mesh
     );
 
-    // Thermal conductivity field
-    /*
-    volScalarField lambda
-    (
-        IOobject
-        (
-            "lambda",
-            runTime.timeName(),
-            mesh
-        ),
-        pflag*kfactor*(a0 + a1*T) + (1.0-pflag)*(a0 + a1*T)
-        //pflag*0.1*(a0 + a1*T) + (1.0-pflag)*(a0 + a1*T)
-    );
-    */
-
-    // Modify c1 based on difference between th and th0
-    //c1 = c1*(th/th0);
-
     // Laser heat source field
     volScalarField edensity
     (
@@ -268,25 +241,8 @@
             IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        Efrac/OPD*exp(-depth/OPD) // c2 is energy absoprtion, c1 is OPD
-        //Efrac*c2/c1*pow(depth/c1,c2-1.0)*exp(-pow(depth/c1,c2))
-        //c3*pow(depth/c1,c2-1)*exp(-pow(depth/c1,c2))
+        Efrac/OPD*exp(-depth/OPD)
     );
-
-    /*
-    volScalarField laserSource
-    (
-        IOobject
-        (
-            "laserSource",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*0.0
-    );
-    */
 
     Info<< "Calculating field g.h\n" << endl;
     volScalarField gh("gh", g & mesh.C());

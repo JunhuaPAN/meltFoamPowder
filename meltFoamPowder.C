@@ -34,7 +34,7 @@ Adapted by Brian Mercer (University of Illiois Urbana-Champaign/Applied Research
 ===================================================================================================
 
 Application
-    meltFoamPowder4a
+    meltFoamPowder
 
 Description
     Solves a convection dominated solid/liquid phase change process.
@@ -43,9 +43,7 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
-//#define NoConstructFromTmp // For compiling on ALCF
 #include "fvCFD.H"
-//#undef NoConstructFromTmp  // For compiling on ALCF
 #include "mathematicalConstants.H"
 #include "pimpleControl.H"
 
@@ -73,9 +71,6 @@ int main(int argc, char *argv[])
     #include "CourantNo.H"
     #include "setInitialDeltaT.H"  
 
-    // For interpolating a table read OpenFoam-style
-    //#include"interpolationTable.H"
-
     pimpleControl pimple(mesh);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -88,7 +83,8 @@ int main(int argc, char *argv[])
     Vlaser[0] = 0.0;
     Vlaser[1] = 0.0;
 
-    // Add code: set tval and deltaT already and calculate xlaserOld from that
+    // Get current time and time step
+    // Set initial laser coordinates (*Old) by interpolating from xylaser.txt
     scalar tval   = runTime.value();
     scalar deltaT = runTime.deltaTValue();
     scalar XlaserOld = interp(tval,t,x);
@@ -97,7 +93,7 @@ int main(int argc, char *argv[])
     // Declare Xlaser, Ylaser, and Plaser
     scalar Xlaser, Ylaser, Plaser;
 
-    // To work with parallel
+    // For writing melt pool data to file during parallel execution
     // - OFstream is openfoam's version of iostream/ofstream/etc
     // - Pstream::master() only does the writing if it is the main rank 0 proc
     // - Pointer setup is probably to make sure the other procs don't write a
@@ -135,13 +131,13 @@ int main(int argc, char *argv[])
         Info << "Vx   = " << Vlaser[0] << endl;
         Info << "Vy   = " << Vlaser[1] << endl;
         Info << "Vmag = " << Vmag << nl << endl;
-        Info << "P    = " << Plaser/1e7 << nl << endl;
+        Info << "P    = " << Plaser << endl;
 
-        // Make distance from laser center a volScalarField
+        // Mesh cell coordinates
         volScalarField cellx(mesh.C().component(0));
-        //volScalarField cellx = mesh.C().component(0);
         volScalarField celly(mesh.C().component(1));
-        //volScalarField celly = mesh.C().component(1);
+
+        // Laser position as dimensionedScalar
         dimensionedScalar X("X",dimensionSet(0,1,0,0,0,0,0),Xlaser);
         dimensionedScalar Y("Y",dimensionSet(0,1,0,0,0,0,0),Ylaser);
 
@@ -150,11 +146,9 @@ int main(int argc, char *argv[])
 
         // Square of distance from laser center
         volScalarField R2((X-cellx)*(X-cellx) + (Y-celly)*(Y-celly));
-        //volScalarField R2 = (X-cellx)*(X-cellx) + (Y-celly)*(Y-celly);
 
-        // Laser heating source term - turn off after last laser table value
+        // Laser heating source term - set to zero if outside table bounds for time
         volScalarField laserSource( (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*exp(-2.0*R2/(w*w)) );
-        //volScalarField laserSource = (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*exp(-2.0*R2/(w*w));
         if(tval > t[t.size()-1] || tval < t[0])
           laserSource = 0*laserSource;
 
@@ -182,7 +176,7 @@ int main(int argc, char *argv[])
         gradT = fvc::grad(T);
         dTdt = fvc::ddt(T);
 
-        // Generate outputs for solidification quantification
+        // Generate outputs for solidification stats
         #include "solidificationCalcs.H"
 
         // Calculate gradient of alpha and see if it is normal vector
@@ -192,6 +186,7 @@ int main(int argc, char *argv[])
         // Update 'old' laser coordinates for next iteration
         XlaserOld = Xlaser;
         YlaserOld = Ylaser;
+
 	// Deal with things related to alpha and calculating gg etc
         #include "alpha.H"
 
@@ -206,9 +201,6 @@ int main(int argc, char *argv[])
     }
 
     Info<< "End\n" << endl;
-
-    // Close the melt pool geometry file
-    //os.close();
 
     return 0;
 }
