@@ -2,14 +2,18 @@
 
 // Create surface field Tsurf which is T interpolated at the face centers of the
 // grid
-surfaceScalarField Tsurf = fvc::interpolate(T);
+surfaceScalarField Tsurf(fvc::interpolate(T));
+//surfaceScalarField Tsurf = fvc::interpolate(T);
 
 // Interpolate the pflag and alpha fields to face centers
-surfaceScalarField pflagSurf = fvc::interpolate(pflag);
-surfaceScalarField alphaSurf = fvc::interpolate(alpha);
+surfaceScalarField pflagSurf(fvc::interpolate(pflag));
+surfaceScalarField alphaSurf(fvc::interpolate(alpha));
+//surfaceScalarField pflagSurf = fvc::interpolate(pflag);
+//surfaceScalarField alphaSurf = fvc::interpolate(alpha);
 
 // Assign conductivity based on pflagSurf - default to material conductivity
-surfaceScalarField lambdaSurf = a0 + a1*Tsurf;
+surfaceScalarField lambdaSurf(a0 + a1*Tsurf);
+//surfaceScalarField lambdaSurf = a0 + a1*Tsurf;
 //surfaceScalarField lambdaSurf = pflagSurf;
 forAll(lambdaSurf,I)
 {

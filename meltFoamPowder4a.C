@@ -39,7 +39,9 @@ Description
 
 \*---------------------------------------------------------------------------*/
 
+//#define NoConstructFromTmp // For compiling on ALCF
 #include "fvCFD.H"
+//#undef NoConstructFromTmp  // For compiling on ALCF
 #include "mathematicalConstants.H"
 #include "pimpleControl.H"
 
@@ -132,8 +134,10 @@ int main(int argc, char *argv[])
         Info << "P    = " << Plaser/1e7 << nl << endl;
 
         // Make distance from laser center a volScalarField
-        volScalarField cellx = mesh.C().component(0);
-        volScalarField celly = mesh.C().component(1);
+        volScalarField cellx(mesh.C().component(0));
+        //volScalarField cellx = mesh.C().component(0);
+        volScalarField celly(mesh.C().component(1));
+        //volScalarField celly = mesh.C().component(1);
         dimensionedScalar X("X",dimensionSet(0,1,0,0,0,0,0),Xlaser);
         dimensionedScalar Y("Y",dimensionSet(0,1,0,0,0,0,0),Ylaser);
 
@@ -141,10 +145,12 @@ int main(int argc, char *argv[])
         dimensionedScalar P("P",dimensionSet(1,2,-3,0,0,0,0),Plaser);
 
         // Square of distance from laser center
-        volScalarField R2 = (X-cellx)*(X-cellx) + (Y-celly)*(Y-celly);
+        volScalarField R2((X-cellx)*(X-cellx) + (Y-celly)*(Y-celly));
+        //volScalarField R2 = (X-cellx)*(X-cellx) + (Y-celly)*(Y-celly);
 
         // Laser heating source term - turn off after last laser table value
-        volScalarField laserSource = (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*exp(-2.0*R2/(w*w));
+        volScalarField laserSource( (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*exp(-2.0*R2/(w*w)) );
+        //volScalarField laserSource = (1.0/rho)*(2.0*P)/(pi*w*w)*edensity*exp(-2.0*R2/(w*w));
         if(tval > t[t.size()-1] || tval < t[0])
           laserSource = 0*laserSource;
 

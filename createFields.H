@@ -14,8 +14,10 @@
     );
 
     // Create depth field as (max(z) - z) on the mesh (CGS units)
-    volScalarField cellz = mesh.C().component(2);
-    volScalarField depth = max(cellz) - mesh.C().component(2);
+    volScalarField cellz(mesh.C().component(2));
+    //volScalarField cellz = mesh.C().component(2);
+    volScalarField depth(max(cellz) - cellz);
+    //volScalarField depth = max(centers.component(2)) - centers.component(2);
 
     // Create the field gradT
     volVectorField gradT
