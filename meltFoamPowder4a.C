@@ -21,13 +21,17 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Reference
-    Universität Bayreuth
-    Lehrstuhl für Technische Thermodynamik und Trasnportprozesse - LTTT
-    Fabian Rösler
-    Universitätsstraße 30
-    95440 Bayreuth
-    Tel.: +49 (921) 55-7163
+===================================================================================================
+Adapted by Brian Mercer (University of Illiois Urbana-Champaign/Applied Research Institute) from:
+
+    Reference
+        Universität Bayreuth
+        Lehrstuhl für Technische Thermodynamik und Trasnportprozesse - LTTT
+        Fabian Rösler
+        Universitätsstraße 30
+        95440 Bayreuth
+        Tel.: +49 (921) 55-7163
+===================================================================================================
 
 Application
     meltFoamPowder4a
