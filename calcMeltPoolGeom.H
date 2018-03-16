@@ -11,16 +11,11 @@ Info << "Scan angle = " << (180.0/3.14)*ang << endl;
 scalarField cx(mesh.C().component(0));
 scalarField cy(mesh.C().component(1));
 scalarField cz(mesh.C().component(2));
-//scalarField cx = mesh.C().component(0);
-//scalarField cy = mesh.C().component(1);
-//scalarField cz = mesh.C().component(2);
 
 // Rotate the x and y mesh coordinate fields by NEGATIVE ang
 ang = -ang;
 scalarField cxrot(Foam::cos(ang)*cx - Foam::sin(ang)*cy);
-//scalarField cxrot = Foam::cos(ang)*cx - Foam::sin(ang)*cy;
 scalarField cyrot(Foam::sin(ang)*cx + Foam::cos(ang)*cy);
-//scalarField cyrot = Foam::sin(ang)*cx + Foam::cos(ang)*cy;
 
 // Default min/max coordinate values for local processor
 scalar xmin = max(cxrot);
@@ -89,12 +84,6 @@ else
   Ly = 1e4*(ymax - ymin);
   Lz = 1e4*(zmax - zmin);
 }
-
-// setprecision(x) uses x decimal points with 'fixed format'
-//outfile << std::setprecision(8);
-
-// 'fixed' format writes without scientific notation (more readable)
-//outfile << std::fixed;
 
 // For writing in parallel
 // Format: <time, xlaser, ylaser, Lx, Ly, Lz>
